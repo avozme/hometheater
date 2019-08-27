@@ -22,7 +22,7 @@
 
 		<form action="/movies/scan" method="get" onsubmit="return confirmation()">
 			<div class="input-group">
-				<input type='text' name='baseDir' id='baseDir' class='form-control' value='/app/public/movies/PELICULAS/' placeholder='Indica aquí un directorio válido para escanear'>
+				<input type='text' name='baseDir' id='baseDir' class='form-control' value='/app/public/movies/peliculas/' placeholder='Indica aquí un directorio válido para escanear'>
 				<div class="input-group-btn">
 					<button type="submit" class="btn btn-secondary">Escanear esta ubicación</button>
 				</div>

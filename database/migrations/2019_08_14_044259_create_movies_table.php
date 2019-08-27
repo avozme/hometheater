@@ -15,16 +15,16 @@ class CreateMoviesTable extends Migration
     {
         Schema::create('movies', function (Blueprint $table) {
             $table->bigIncrements('id')->unique();
-            $table->string('title',200);
+            $table->string('title',500);
             $table->integer('year')->nullable();
             $table->integer('duration')->nullable();
             $table->date('dateAdded')->nullable();
             $table->date('datePlayed')->nullable();
             $table->integer('rating')->nullable();
             $table->string('cover', 500)->nullable();
-            $table->string('fileDirName', 500)->nullable();
-            $table->string('fileName', 100)->nullable();
-            $table->string('link', 1024)->nullable();
+            $table->string('fileDirName', 1000)->nullable();
+            $table->string('fileName', 500)->nullable();
+            $table->string('link', 1000)->nullable();
             $table->timestamps();
         });
     }

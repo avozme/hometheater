@@ -9,7 +9,7 @@ use App\Genres;
 
 class Movie extends Controller
 {
-	private $baseDir = "/app/public/movies/PELICULAS/";	// IMPORTANT! Change to scan movies in other location!
+	private $baseDir = "/app/public/movies/PELICULAS/";	// Default location to scan movies if no other is provided
 	
     public function index() {
 		$this->list();
@@ -118,19 +118,23 @@ class Movie extends Controller
      * Scan an specific location to find movies and add them to DB.
      * Some data are taken from movie file. Others are scrapped from filmaffinity.com.
      * Scrapping is managed on the model.
+     * 
+     * @param Request The form field with de base directory where the search will start
      *
      * @return \Illuminate\Http\Response
      */
-	public function scan() {
-		$moviesFound = Movies::scan($this->baseDir);
+	public function scan(Request $request) {
+		$location = $request->input('baseDir');
+		if ($location == null || $location == "") $location = $this->baseDir;
+		$moviesFound = Movies::scan($location);
 		$moviesFileNames = Movies::getFileNamesFromFullPath($moviesFound);
 		$moviesDirNames = Movies::getDirNamesFromFullPath($moviesFound);
 		$moviesTitles = Movies::getMoviesTitlesFromFileNames($moviesFileNames);
 		
-		Movies::createAndSave($moviesFileNames, $moviesDirNames, $moviesTitles, $this->baseDir);
+		$moviesCount = Movies::createAndSave($moviesFileNames, $moviesDirNames, $moviesTitles, $this->baseDir);
 		
 		$data['movies'] = Movies::getAll();
-		$data['infoText'] = "El escaneo de nuevas películas ha finalizado con éxito";
+		$data['infoText'] = "El escaneo de nuevas películas ha finalizado. Se han encontrado ".count($moviesFound)." películas, de las cuales $moviesCount eran nuevas.";
 		return view('movieList', $data);
 	}
 	

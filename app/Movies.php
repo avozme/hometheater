@@ -79,12 +79,9 @@ class Movies extends Model
 	
 	public static function scan($dir) {
 		$moviesFound = array();
-		echo "Scanning file $dir<br>";
 		if (is_dir($dir)) {
-			echo "File $dir is a directory! Opening...<br>";
 			if ($dh = opendir($dir)) {
 				while (($file = readdir($dh)) !== false) {
-					echo "  - Scanning file $file<br>";
 					if ($file == '.' || $file == '..') {
 						// Ignore . and .. directories
 						continue;
@@ -100,15 +97,12 @@ class Movies extends Model
 						$ext = substr($file, strlen($file)-3, 3);
 						if ($ext=='avi' || $ext=='mpg' || $ext=='mkv' || $ext=='wmv' || $ext=='rpm' || $ext=='mp4') {
 							$moviesFound[] = $dir . $file;
-							echo "  - Adding file $file to selection<br>";
 						}
 					}
 				}
 				closedir($dh);
 			}
-		} else {
-			echo "File $dir isn't a directory<br>";
-		}
+		} 
 		return $moviesFound;
 	}
 	
@@ -147,11 +141,14 @@ class Movies extends Model
 	}
 	
 	public static function createAndSave($moviesFileNames, $moviesDirNames, $moviesTitles, $baseDir) {
+		$moviesCount = 0;	// Counts how many movies are really inserted on DB (only the new ones)
+		
 		for ($i = 0; $i < count($moviesTitles); $i++) {
 			$movieTitle = $moviesTitles[$i];
 			$searchResult = Movies::where('title', '=', $movieTitle)->get();
 			if (count($searchResult) == 0) {
 				// The movie title doesn't exist on DB: we gonna create and save it
+				$moviesCount++;
 				$movie = new Movies();
 				// We know yet some data
 				$movie->title = $moviesTitles[$i];
@@ -166,6 +163,7 @@ class Movies extends Model
 				// The movie existed yet on DB. Nothing to do.
 			}
 		}
+		return $moviesCount;
 	}
 	
 	public function scrapInfo($baseDir) {

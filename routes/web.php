@@ -15,7 +15,7 @@
 Route::get('/', 'Movie@list');
 Route::get('/movies', 'Movie@list');
 Route::get('/movies/search/{searchString}', 'Movie@search');
-Route::get('/movies/scan', 'Movie@scan');
+Route::get('/movies/scan/', 'Movie@scan');
 
 // Single movie
 Route::get('/movie/{id}', 'Movie@show');

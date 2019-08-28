@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use App\Movies;
 use App\Scrapper;
 use App\Genres;
+use App\PeopleActMovies;
+use App\PeopleDirectMovies;
+use App\GenresMovies;
 
 class Movie extends Controller
 {
-	private $baseDir = "/app/public/movies/PELICULAS/";	// Default location to scan movies if no other is provided
+	private $baseDir = "/app/public/movies/Películas/";	// Default location to scan movies if no other is provided
 	
     public function index() {
 		$this->list();
@@ -72,6 +75,9 @@ class Movie extends Controller
      */
     public function destroy($id) {
         Movies::find($id)->delete();
+        PeopleActMovies::where('idMovie', $id)->delete();
+        PeopleDirectMovies::where('idMovie', $id)->delete();
+        GenresMovies::where('idMovie', $id)->delete();
 		$data['infoText'] = "Película borrada con éxito";
 		$data['movies'] = Movies::getAll();
 		return view('movieList', $data);
@@ -123,7 +129,7 @@ class Movie extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-	public function scan(Request $request) {
+	public function scanDir(Request $request) {
 		$location = $request->input('baseDir');
 		if ($location == null || $location == "") $location = $this->baseDir;
 		$moviesFound = Movies::scan($location);
@@ -137,5 +143,26 @@ class Movie extends Controller
 		$data['infoText'] = "El escaneo de nuevas películas ha finalizado. Se han encontrado ".count($moviesFound)." películas, de las cuales $moviesCount eran nuevas.";
 		return view('movieList', $data);
 	}
+
+    /**
+     * Scan an specific location to find movies and add them to DB.
+     * Some data are taken from movie file. Others are scrapped from filmaffinity.com.
+     * Scrapping is managed on the model.
+     * 
+     * @param Request The form field with de base directory where the search will start
+     *
+     * @return \Illuminate\Http\Response
+     */
+	public function scanSingle($id, Request $request) {
+		$url = $request->input('movieUrlInput');
+		$movie = Movies::find($id);
+		$movie->scrapMovie($this->baseDir, $url);
+		$movie->save();
+		
+		$data['movies'] = Movies::getAll();
+		$data['infoText'] = "Película modificada con éxito.";
+		return view('movieList', $data);
+	}
+
 	
 }

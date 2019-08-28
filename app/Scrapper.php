@@ -9,18 +9,23 @@ class Scrapper extends Model
 {
 	private $resp, $movieUrl, $movieTitle, $movieDirectory, $baseDir, $logfile;
 	
-	// Launch a GET request on filmaffinity.com/es (through advanced search)
-	// and save response on $this->resp for further processing
-	public function launchGetRequest($movieTitle, $movieDirectory, $baseDir) {
+	// Scrapper constructor
+	public function __construct($movieTitle, $movieDirectory, $baseDir, $attributes = array()) {
+		parent::__construct($attributes);
 		// Initialize logfile for debug
 		$this->logfile = "log_".date("Y-m-d").".log";
-		
-		// Launch search on filmaffinity
 		$this->movieTitle = $movieTitle;	// Save movieTitle without url encoding
 		$this->movieDirectory = $movieDirectory;
 		$this->baseDir = $baseDir;
+	}
+	
+	// Launch a search on filmaffinity.com/es (through advanced search)
+	// and find the movie URL from its title.
+	public function launchWebSearch() {
+		
+		// Launch search on filmaffinity
 		$movieTitle = urlencode($this->movieTitle);	// We'll use title with url encoding only for curl request
-		file_put_contents($this->logfile, "\n\nLaunching get request for movie: $movieTitle\n", FILE_APPEND);
+		//file_put_contents($this->logfile, "\n\nLaunching get request for movie: $movieTitle\n", FILE_APPEND);
 		$curl = curl_init();
 		curl_setopt_array($curl, [
 			CURLOPT_RETURNTRANSFER => 1,
@@ -39,9 +44,14 @@ class Scrapper extends Model
 		$initialResp = substr($initialResp, $pos);
 
 		$pos = strpos($initialResp, "img") - 3;	// Past the href, there is a img tag. We use it to extract exactly the movie's URL
-		$this->movieUrl = substr($initialResp, 0, $pos);
-
-
+		$movieUrl = substr($initialResp, 0, $pos);
+		
+		return $movieUrl;
+	}
+	
+	// Recover HTML code from movie web page. 
+	public function retrieveMovieInfoFromWeb($movieUrl) {
+		$this->movieUrl = $movieUrl;
 
 		// Load the movie page on filmaffinity.com
 		$curl = curl_init();
@@ -54,32 +64,34 @@ class Scrapper extends Model
 		curl_close($curl);
 	}
 	
-	// Retrieve movie general data (such cover, duration, year, etc) 
-	// through scrapping the HTML code previously got.
-	// Returns a movie with all those data.
+	// Scap HTML code previously got and retrieve from it movie general data 
+	// (such cover, duration, year, etc) 
+	// Returns a movie object with all those data.
     public function getMovieData() {
 
-		$movie = new Movies();
-		file_put_contents($this->logfile, "Movie URL: $this->movieUrl\n", FILE_APPEND);
-		
 		// Extract movie data from response
-		// 1. Cover image URL
+		// 1. Create Movie object and assing movieUrl
+		$movie = new Movies();
+		//file_put_contents($this->logfile, "Movie URL: $this->movieUrl\n", FILE_APPEND);
+		$movie->link = substr($this->movieUrl, 0, 1000);
+		
+		// 2. Cover image URL
 		$pos = strpos($this->resp, 'img itemprop="image"') + 51;
 		$this->resp = substr($this->resp, $pos);
 		$pos = strpos($this->resp, 'alt') - 1;
 		$coverImgUrl = substr($this->resp, 0, $pos);
-		file_put_contents($this->logfile, "Cover URL: $coverImgUrl\n", FILE_APPEND);
+		//file_put_contents($this->logfile, "Cover URL: $coverImgUrl\n", FILE_APPEND);
 		
 		// Copy image from URL to local
-		$movie->cover = $this->movieTitle.".jpg";
-		file_put_contents($this->logfile, "Cover path: $movie->cover\n", FILE_APPEND);
+		$movie->cover = substr($this->movieTitle.".jpg", 0, 500);
+		//file_put_contents($this->logfile, "Cover path: $movie->cover\n", FILE_APPEND);
 		$fullpath = "movies/covers/$movie->cover";
 		$curl = curl_init ($coverImgUrl);
 		$timeout = 5;
 		curl_setopt($curl,CURLOPT_URL,$coverImgUrl);
 		curl_setopt($curl,CURLOPT_RETURNTRANSFER,1);
 		curl_setopt($curl,CURLOPT_CONNECTTIMEOUT,$timeout);
-		curl_setopt($curl,CURLOPT_USERAGENT,'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
+		curl_setopt($curl,CURLOPT_USERAGENT,'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)');
 		$rawdata = curl_exec($curl);
 		curl_close($curl);
 		if(file_exists($fullpath)){
@@ -87,23 +99,23 @@ class Scrapper extends Model
 		}
 		file_put_contents($fullpath, $rawdata);
 		
-		// 2. Rating
+		// 3. Rating
 		$pos = strpos($this->resp, 'movie-rat-avg') + 47;
 		$rating = substr($this->resp, $pos, 3);
 		$movie->rating = round(floatval($rating));
-		file_put_contents($this->logfile, "Rating: $rating\n", FILE_APPEND);
+		//file_put_contents($this->logfile, "Rating: $rating\n", FILE_APPEND);
 		
-		// 3. Date
+		// 4. Date
 		$pos = strpos($this->resp, 'datePublished') + 15;
 		$year = substr($this->resp, $pos, 4);
 		$movie->year = intval($year);
-		file_put_contents($this->logfile, "Year: $year\n", FILE_APPEND);
+		//file_put_contents($this->logfile, "Year: $year\n", FILE_APPEND);
 		
-		// 4. Duration
+		// 5. Duration
 		$pos = strpos($this->resp, 'duration') + 10;
 		$duration = substr($this->resp, $pos, 3);
 		$movie->duration = intval($duration);
-		file_put_contents($this->logfile, "Duration: $duration\n", FILE_APPEND);
+		//file_put_contents($this->logfile, "Duration: $duration\n", FILE_APPEND);
 		
 		return $movie;
 	}
@@ -124,7 +136,7 @@ class Scrapper extends Model
 			$dirName = substr($this->resp, 0, $pos);
 			$directors[] = $dirName;
 			$count++;
-			file_put_contents($this->logfile, "  * $dirName\n", FILE_APPEND);
+			//file_put_contents($this->logfile, "  * $dirName\n", FILE_APPEND);
 			$pos = strpos($this->resp, '</a>') + 4;
 			$this->resp = substr($this->resp, $pos);
 			if ($this->resp[0] == ' ' || $count > 3) {	// This is the last name on directors list
@@ -148,13 +160,13 @@ class Scrapper extends Model
 		$pos = strpos($this->resp, '</span>');
 		$actors = array();
 		$exit = false;
-		file_put_contents($this->logfile, "Cast:\n", FILE_APPEND);
+		//file_put_contents($this->logfile, "Cast:\n", FILE_APPEND);
 		$count = 0;
 		while (!$exit) {
 			$actName = substr($this->resp, 0, $pos);
 			$actors[] = $actName;
 			$count++;
-			file_put_contents($this->logfile, "  * $actName\n", FILE_APPEND);
+			//file_put_contents($this->logfile, "  * $actName\n", FILE_APPEND);
 			$pos = strpos($this->resp, '</a>') + 4;
 			$this->resp = substr($this->resp, $pos);
 			if ($this->resp[0] == ' ' || $count > 10) {	// This is the last name on cast list
@@ -177,14 +189,14 @@ class Scrapper extends Model
 		$pos = strpos($this->resp, "</a>");
 		$genres = array();
 		$exit = false;
-		file_put_contents($this->logfile, "Genres:\n", FILE_APPEND);
+		//file_put_contents($this->logfile, "Genres:\n", FILE_APPEND);
 		$count = 0;
 		while (!$exit) {
 			$genName = substr($this->resp, 0, $pos);
 			$genName = preg_replace("/[^a-zA-Z0-9áéíóúñAÉÍÓÚÑ\s]/", "", $genName);	// Sometimes, genre name isn't recovered clean: we apply a creaning routine to string
 			$genres[] = $genName;
 			$count++;
-			file_put_contents($this->logfile, "  * $genName\n", FILE_APPEND);
+			//file_put_contents($this->logfile, "  * $genName\n", FILE_APPEND);
 			$pos = strpos($this->resp, "</span>") + 7;
 			$this->resp = substr($this->resp, $pos);
 			if ($this->resp[0] == ' ' || $count > 6) {	// This is the last genre on genres list

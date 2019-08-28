@@ -1,7 +1,7 @@
 @extends('layouts.mainlayout')
 
 @section('content')
-   <div class="album text-muted">
+   <div class="album text-muted content-section">
      <div class="container">
        <div class="row">
           <div class="col-md-12">

@@ -95,7 +95,7 @@ class Movies extends Model
 					} else {
 						// File found: add to $moviesFound if extension fits
 						$ext = substr($file, strlen($file)-3, 3);
-						if ($ext=='avi' || $ext=='mpg' || $ext=='mkv' || $ext=='wmv' || $ext=='rpm' || $ext=='mp4') {
+						if ($ext=='avi' || $ext=='mpg' || $ext=='mkv' || $ext=='wmv' || $ext=='rpm' || $ext=='mp4' || $ext=='m4v') {
 							$moviesFound[] = $dir . $file;
 						}
 					}
@@ -156,7 +156,9 @@ class Movies extends Model
 				$movie->fileName = $moviesFileNames[$i];
 				$movie->save();
 				// We recover the rest of data from web scrapping
-				$movie->scrapInfo($baseDir);
+				$movie->scrapMovie($baseDir);
+				// Sleep for 1 second in order to not overload server (in that case, server may reject our queries)
+				sleep(1);
 				// Finally, we save data scrapped on DB
 				$movie->save();
 			} else {
@@ -166,11 +168,15 @@ class Movies extends Model
 		return $moviesCount;
 	}
 	
-	public function scrapInfo($baseDir) {
+	public function scrapMovie($baseDir, $movieUrl = null) {
 		// Launch scrapper
-		$scrapper = new Scrapper();
-		$scrapper->launchGetRequest($this->title, $this->fileDirName, $baseDir);
-		
+		$scrapper = new Scrapper($this->title, $this->fileDirName, $baseDir);
+		if ($movieUrl == null) $movieUrl = $scrapper->launchWebSearch();
+		$scrapper->retrieveMovieInfoFromWeb($movieUrl);
+		$this->retrieveInfoFromScrapper($scrapper);
+	}
+	
+	private function retrieveInfoFromScrapper($scrapper) {
 		// Retrieve general data
 		$movieData = $scrapper->getMovieData();
 		$this->year = $movieData->year;
@@ -182,8 +188,10 @@ class Movies extends Model
 		$this->datePlayed = '2000/01/01';
 
 		// Directing
+		PeopleDirectMovies::where('idMovie', $this->id)->delete();
 		$listDirectors = $scrapper->getDirectors();
 		foreach ($listDirectors as $directorName) {
+			$directorName = substr($directorName, 0, 500);
 			$idPerson = 0;
 			$personSearch = People::where('name', '=', $directorName)->get();
 			if (count($personSearch) == 0) {
@@ -198,8 +206,10 @@ class Movies extends Model
 		}
 		
 		// Acting: retrieve actors' list from filmaffinity
+		PeopleActMovies::where('idMovie', $this->id)->delete();
 		$listActors = $scrapper->getCast();
 		foreach ($listActors as $actorName) {
+			$actorName = substr($actorName, 0, 500);
 			$idPerson = 0;
 			$personSearch = People::where('name', '=', $actorName)->get();
 			if (count($personSearch) == 0) {
@@ -214,8 +224,10 @@ class Movies extends Model
 		}
 
 		// Genres
+		GenresMovies::where('idMovie', $this->id)->delete();
 		$listGenres = $scrapper->getGenres();
 		foreach ($listGenres as $genre) {
+			$genre = substr($genre, 0, 500);
 			$genreSearch = Genres::where('name', '=', $genre)->get();
 			$idGenre = 0;
 			if (count($genreSearch) == 0) {
@@ -230,4 +242,5 @@ class Movies extends Model
 		}
 
 	}
+	
 }

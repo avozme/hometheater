@@ -1,7 +1,7 @@
 @extends('layouts.mainlayout')
 
 @section('content')
-   <div class="album text-muted">
+   <div class="album text-muted content-section">
      <div class="container">
        <div class="row">
           <div class="col-md-12">
@@ -64,12 +64,21 @@
 									&nbsp;&nbsp;
 									<button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.href='/movie/edit/{{$movie->id}}'">Editar</button>
 									&nbsp;&nbsp;
-									<button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.href='{{$movie->link}}'">Más info</button>
+									<button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.href='https://www.filmaffinity.com{{$movie->link}}'">Más info</button>
 									&nbsp;&nbsp;
-									<button type="button" class="btn btn-danger btn-xs" onclick="deleteConfirmation({{$movie->id}})">Borrar</button>
-									&nbsp;&nbsp;
+									<button type="button" class="btn btn-danger btn-xs" onclick="deleteMovieConfirmation({{$movie->id}})">Borrar</button>
 								</div> <!-- btn-group -->
 							</div> <!-- d-flex -->
+								<p>&nbsp;</p>
+								<form action="/movie/scan/{{$movie->id}}" method="get" onsubmit="return scanMovieConfirmation()">
+									<div class="input-group">
+										<input type='text' name='movieUrlInput' id='movieUrlInput' class='form-control' value="{{$movie->link}}" placeholder='Escribe aquí la parte final de la URL de la película (ej: /es/film358476.html)'>
+										<div class="input-group-btn">
+											<button type="submit" class="btn btn-secondary">Re-escanear película</button>
+										</div>
+									</div>
+									<small id="movieUrlHelp" class="text-danger"></small>      
+								</form>
 						</div> <!-- card-body -->
 					</div> <!-- card -->
 				</div> <!-- col-md -->		
@@ -78,11 +87,3 @@
      </div> <!-- container -->
    </div> <!-- album text-muted -->
 @endsection
-
-<script>
-	function deleteConfirmation(idMovie) {
-		if (confirm("¿Estás seguro de que deseas borrar esta película?\n(El archivo NO se eliminará del disco duro)")) {
-			location.href="/movie/delete/" + idMovie;
-		}
-	}
-</script>

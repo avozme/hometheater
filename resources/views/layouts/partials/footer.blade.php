@@ -1,28 +1,11 @@
 
-<script>
-
-		function confirmation() {
-			if ($('#baseDir').val() == "") {
-				$('#baseDirHelp').empty("");
-				$('#baseDirHelp').append("¡Escribe un directorio válido!");
-				$('#baseDir').addClass("has-error");
-				return false;
-			}
-			return confirm("Esta acción lanzará una búsqueda de nuevas películas en la ubicación señalada y las añadirá a la base de datos.\nEste proceso puede tardar varios minutos.\n¿Estás seguro de que quieres continuar?");
-			
-		}
-
-</script>
-
-
-
-<footer class="text-muted">
+<footer class="text-muted footer-section">
 
 	<div class="container">
 
-		<form action="/movies/scan" method="get" onsubmit="return confirmation()">
+		<form action="/movies/scan" method="get" onsubmit="return scanDirConfirmation()">
 			<div class="input-group">
-				<input type='text' name='baseDir' id='baseDir' class='form-control' value='/app/public/movies/peliculas/' placeholder='Indica aquí un directorio válido para escanear'>
+				<input type='text' name='baseDir' id='baseDir' class='form-control' value='/app/public/movies/Películas/' placeholder='Indica aquí un directorio válido para escanear'>
 				<div class="input-group-btn">
 					<button type="submit" class="btn btn-secondary">Escanear esta ubicación</button>
 				</div>

@@ -22,9 +22,9 @@
 								<!-- Movie rating (1 to 10 stars) -->
 								@for ($i = 1; $i <= 10; $i++)
 									@if ($i <= $movie->rating) 
-										<img src='/imgs/star-yellow.png' height='20'>
+										<i class="fa fa-star" style='color: orange'></i>
 									@else
-										<img src='/imgs/star-grey.png'  height='20'>
+										<i class="fa fa-star" style='color: dark-grey'></i>
 									@endif
 								@endfor
 								<p>&nbsp;</p>

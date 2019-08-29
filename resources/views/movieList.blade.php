@@ -34,6 +34,7 @@
 								<a href='/movie/{{$movie->id}}'>
 								{{$movie->title}}
 								</a>
+								<br>{{$movie->year}} | {{$movie->rating}} <i class="fa fa-star" style='color: orange'></i>
 							</div> <!-- card-text -->
 							<div class="d-flex justify-content-between align-items-center">
 							</div> <!-- d-flex -->

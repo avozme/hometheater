@@ -57,11 +57,10 @@
 									@endforeach
 								</p>
 							</div> <!-- card-text -->
-							<!-- Movie "play" and "external link" buttons -->
+
+							<!-- Buttons -->
 							<div class="d-flex justify-content-between align-items-center">
 								<div class="btn-group">
-									<button type="button" class="btn btn-sm btn-primary" onclick="location.href='/movies/{{$movie->fileDirName}}/{{$movie->fileName}}'">Reproducir</button>
-									&nbsp;&nbsp;
 									<button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.href='/movie/edit/{{$movie->id}}'">Editar</button>
 									&nbsp;&nbsp;
 									<button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.href='https://www.filmaffinity.com{{$movie->link}}'">Más info</button>
@@ -69,16 +68,28 @@
 									<button type="button" class="btn btn-danger btn-xs" onclick="deleteMovieConfirmation({{$movie->id}})">Borrar</button>
 								</div> <!-- btn-group -->
 							</div> <!-- d-flex -->
-								<p>&nbsp;</p>
-								<form action="/movie/scan/{{$movie->id}}" method="get" onsubmit="return scanMovieConfirmation()">
-									<div class="input-group">
-										<input type='text' name='movieUrlInput' id='movieUrlInput' class='form-control' value="{{$movie->link}}" placeholder='Escribe aquí la parte final de la URL de la película (ej: /es/film358476.html)'>
-										<div class="input-group-btn">
-											<button type="submit" class="btn btn-secondary">Re-escanear película</button>
-										</div>
+							<p>&nbsp;</p>
+							
+							<!-- Play Button -->
+							<div class="input-group">
+								<input type='text' readonly='true' name='movieFullPath' id='movieFullPath' class='form-control' value="/movies{{$movie->fileDirName}}/{{$movie->fileName}}" >
+								<div class="input-group-btn">
+									<button type="button" class="btn btn-primary" onclick="location.href='/movie/play/{{$movie->id}}'">Reproducir</button>
+								</div>
+							</div>
+
+							<!-- Rescan Button -->
+							<hr>
+							<form action="/movie/scan/{{$movie->id}}" method="get" onsubmit="return scanMovieConfirmation()">
+								<div class="input-group" style='padding-left: 30%; padding-right: 30%'>
+									<input type='text' name='movieUrlInput' id='movieUrlInput' class='form-control' value="{{$movie->link}}" placeholder='Escribe aquí la parte final de la URL de la película (ej: /es/film358476.html)'   style='font-size: 75%' width='50%'>
+									<div class="input-group-btn">
+										<button type="submit" class="btn btn-secondary"   style='font-size: 75%'>Rescanear película</button>
 									</div>
-									<small id="movieUrlHelp" class="text-danger"></small>      
-								</form>
+								</div>
+								<small id="movieUrlHelp" class="text-danger"></small>      
+							</form>
+
 						</div> <!-- card-body -->
 					</div> <!-- card -->
 				</div> <!-- col-md -->		

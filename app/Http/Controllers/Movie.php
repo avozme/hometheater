@@ -106,6 +106,23 @@ class Movie extends Controller
 		$data['actors'] = Movies::findActors($id);
 		return view('movieShow', $data);
 	}
+
+	/**
+	 * Plays movie through external application
+	 * TODO: stream video from vlc server (for now, file is downloaded by browser; you can configure your browser for locally open it with vlc)
+	 * 
+	 * @param int $id Movie id
+	 */ 
+	public function play($id) {
+		$movie = Movies::find($id);
+		// WARNING: TODO: this fix is a shabby patch because de path is  wrongly saved on BD
+		$pos = strpos($movie->fileDirName, "/movies");
+		$data['movieFile'] = substr($movie->fileDirName, $pos)."/".$movie->fileName;
+		//passthru("vlc ".$movie->fileDirName."/".$movie->fileName, $response);
+		//return view('moviePlay', $data);
+		echo $data['movieFile'];
+		return redirect($data['movieFile']);
+	}
 	
     /**
      * Show a list of movies as result as a search string.
@@ -140,7 +157,7 @@ class Movie extends Controller
 		$moviesCount = Movies::createAndSave($moviesFileNames, $moviesDirNames, $moviesTitles, $this->baseDir);
 		
 		$data['movies'] = Movies::getAll();
-		$data['infoText'] = "El escaneo de nuevas películas ha finalizado. Se han encontrado ".count($moviesFound)." películas, de las cuales $moviesCount eran nuevas.";
+		$data['infoText'] = "El escaneo de nuevas películas ha finalizado. Se han encontrado ".$moviesCount['processed']." películas, de las cuales ".$moviesCount['inserted']." eran nuevas.";
 		return view('movieList', $data);
 	}
 
@@ -159,9 +176,10 @@ class Movie extends Controller
 		$movie->scrapMovie($this->baseDir, $url);
 		$movie->save();
 		
-		$data['movies'] = Movies::getAll();
-		$data['infoText'] = "Película modificada con éxito.";
-		return view('movieList', $data);
+		$data['movie'] = Movies::find($id);
+		$data['directors'] = Movies::findDirectors($id);
+		$data['actors'] = Movies::findActors($id);
+		return view('movieShow', $data);
 	}
 
 	

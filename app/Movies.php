@@ -31,7 +31,7 @@ class Movies extends Model
     }
     
     public static function getAll() {
-		return DB::table('movies')->orderBy('year')->get();
+		return DB::table('movies')->orderBy('year', 'desc')->orderBy('title', 'asc')->get();
 	}
     
     public static function findDirectors($idMovie) {
@@ -52,25 +52,25 @@ class Movies extends Model
 	
 	public static function search($searchString) {
 		// Search by movie title
-		$searchResultTitle = Movies::where('title', 'like', "%$searchString%")->orderBy('year')->get();
+		$searchResultTitle = Movies::where('title', 'like', "%$searchString%")->orderBy('year', 'desc')->orderBy('title')->get();
 		// Search by movie cast
 		$searchResultCast = DB::table('movies')
 								->join('people_act_movies', 'people_act_movies.idMovie', '=', 'movies.id')
 								->join('people', 'people_act_movies.idPerson', '=', 'people.id')
 								->select('movies.*')
-								->where('people.name', 'like', "%$searchString%")->orderBy('year')->get();
+								->where('people.name', 'like', "%$searchString%")->orderBy('year', 'desc')->orderBy('title')->get();
 		// Search by movie direction
 		$searchResultDirection = DB::table('movies')
 								->join('people_direct_movies', 'people_direct_movies.idMovie', '=', 'movies.id')
 								->join('people', 'people_direct_movies.idPerson', '=', 'people.id')
 								->select('movies.*')
-								->where('people.name', 'like', "%$searchString%")->orderBy('year')->get();
+								->where('people.name', 'like', "%$searchString%")->orderBy('year', 'desc')->orderBy('title')->get();
 		// Search by movie genre
 		$searchResultGenre = DB::table('movies')
 								->join('genres_movies', 'genres_movies.idMovie', '=', 'movies.id')
 								->join('genres', 'genres_movies.idGenre', '=', 'genres.id')
 								->select('movies.*')
-								->where('genres.name', 'like', "%$searchString%")->orderBy('year')->get();
+								->where('genres.name', 'like', "%$searchString%")->orderBy('year', 'desc')->orderBy('title')->get();
 		
 		// Merging and returning all results
 		$searchResult = $searchResultTitle->toBase()->merge($searchResultCast->toBase())->merge($searchResultDirection->toBase())->merge($searchResultGenre->toBase());
@@ -141,14 +141,17 @@ class Movies extends Model
 	}
 	
 	public static function createAndSave($moviesFileNames, $moviesDirNames, $moviesTitles, $baseDir) {
-		$moviesCount = 0;	// Counts how many movies are really inserted on DB (only the new ones)
+		$moviesCount['processed'] = 0;	// Counts all movies found and processed
+		$moviesCount['inserted'] = 0;	// Counts how many movies are really inserted on DB (only the new ones)
+		$moviesCount['moved'] = 0;		// Counts how many movies has been moved from their previous locations
 		
 		for ($i = 0; $i < count($moviesTitles); $i++) {
+			$moviesCount['processed']++;
 			$movieTitle = $moviesTitles[$i];
 			$searchResult = Movies::where('title', '=', $movieTitle)->get();
 			if (count($searchResult) == 0) {
 				// The movie title doesn't exist on DB: we gonna create and save it
-				$moviesCount++;
+				$moviesCount['inserted']++;
 				$movie = new Movies();
 				// We know yet some data
 				$movie->title = $moviesTitles[$i];
@@ -162,7 +165,13 @@ class Movies extends Model
 				// Finally, we save data scrapped on DB
 				$movie->save();
 			} else {
-				// The movie existed yet on DB. Nothing to do.
+				// The movie existed yet on DB. Perhaps file location has been changed?
+				$movie = $searchResult[0];
+				$movie->fileDirName = $moviesDirNames[$i];
+				$movie->fileName = $moviesFileNames[$i];
+				if ($movie->save()) {		// We try to update record with new dir and filename; if nothing has changed, nothing will happend on DB
+					$moviesCount['moved']++;
+				}
 			}
 		}
 		return $moviesCount;

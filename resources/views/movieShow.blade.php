@@ -34,7 +34,7 @@
 								</h5>
 								<!-- Movie genres -->
 								@foreach ($movie->genres as $genre)
-									<a href='/movies/search/{{$genre->name}}'>{{$genre->name}}</a>
+									<a href="{{route('movie.search', $genre->name)}}">{{$genre->name}}</a>
 									@if (!$loop->last) |
 									@endif
 								@endforeach
@@ -42,7 +42,7 @@
 								<!-- Movie direction -->
 								<h5>Dirección</h5> 
 									@foreach ($directors as $director) 
-										<a href='/movies/search/{{ $director->name }}'>{{ $director->name }}</a> 
+										<a href="{{route('movie.search',$director->name)}}">{{ $director->name }}</a> 
 										@if(!$loop->last) |
 										@endif
 									@endforeach
@@ -51,7 +51,7 @@
 								<!-- Movie cast -->
 								<h5>Reparto</h5>
 									@foreach ($actors as $actor) 
-										<a href='/movies/search/{{ $actor->name }}' >{{ $actor->name }}</a>
+										<a href="{{route('movie.search',$actor->name)}}" >{{ $actor->name }}</a>
 										@if(!$loop->last) |
 										@endif
 									@endforeach
@@ -74,13 +74,13 @@
 							<div class="input-group">
 								<input type='text' readonly='true' name='movieFullPath' id='movieFullPath' class='form-control' value="/movies{{$movie->fileDirName}}/{{$movie->fileName}}" >
 								<div class="input-group-btn">
-									<button type="button" class="btn btn-primary" onclick="location.href='/movie/play/{{$movie->id}}'">Reproducir</button>
+									<button type="button" class="btn btn-primary" onclick="location.href={{route('movie.play',$movie->id)}}">Reproducir</button>
 								</div>
 							</div>
 
 							<!-- Rescan Button -->
 							<hr>
-							<form action="/movie/scan/{{$movie->id}}" method="get" onsubmit="return scanMovieConfirmation()">
+							<form action="{{route('movie.scanOne',$movie->id)}}" method="get" onsubmit="return scanMovieConfirmation()">
 								<div class="input-group" style='padding-left: 30%; padding-right: 30%'>
 									<input type='text' name='movieUrlInput' id='movieUrlInput' class='form-control' value="{{$movie->link}}" placeholder='Escribe aquí la parte final de la URL de la película (ej: /es/film358476.html)'   style='font-size: 75%' width='50%'>
 									<div class="input-group-btn">

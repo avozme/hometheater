@@ -12,17 +12,18 @@
 */
 
 // All movies
-Route::get('/', 'Movie@list');
-Route::get('/movies', 'Movie@list');
-Route::get('/movies/search/{searchString}', 'Movie@search');
-Route::get('/movies/scan/', 'Movie@scanDir');
+Route::get('/', 'Movie@list')->name('movie.index');
+Route::get('/movies', 'Movie@list')->name('movie.index');
+Route::get('/movies/search/{searchString}', 'Movie@search')->name('movie.search');
+Route::get('/movies/scan/', 'Movie@scanDir')->name('movie.scanMany');
 
 // Single movie
-Route::get('/movie/{id}', 'Movie@show');
-Route::get('/movie/play/{id}', 'Movie@play');
-Route::get('/movie/scan/{id}', 'Movie@scanSingle');
-Route::get('/movie/edit/{id}', 'Movie@edit');
-Route::get('/movie/delete/{id}', 'Movie@destroy');
+Route::get('/movie/play/{id}', 'Movie@play')->name('movie.play');
+Route::get('/movie/scan/{id}', 'Movie@scanSingle')->name('movie.scanOne');
 
-// Movie CRUD
+// Movie REST
 Route::resource('movie', 'Movie');
+//Route::get('/movie/{id}', 'Movie@show')->name('movie.show');
+//Route::get('/movie/edit/{id}', 'Movie@edit')->name('movie.edit');
+//Route::patch('/movie/update/{id}', 'Movie@update')->name('movie.update');
+//Route::get('/movie/delete/{id}', 'Movie@destroy')->name('movie.destroy');

@@ -11,7 +11,7 @@
  		  </h3>
 		  @if (isset($genres))
 			@foreach ($genres as $genre)
-				<a href='/movies/search/{{$genre->name}}'>{{$genre->name}}</a>
+				<a href='{{route("movie.search",$genre->name)}}'>{{$genre->name}}</a>
 				@if(!$loop->last) |
 				@endif
 			@endforeach
@@ -26,12 +26,12 @@
 				@foreach ($movies as $movie)
 				<div class='col-md-3'>
 					<div class='card mb-3 box-shadow'>
-						<a href='/movie/{{$movie->id}}'>
-						<img class="card-img-top" src='/movies/covers/{{$movie->cover}}' width='200'/><br/>
+						<a href='{{route("movie.show",$movie->id)}}'>
+						<img class="card-img-top" src='url("/movies/covers/{{$movie->cover}}")' width='200'/><br/>
 						</a>
 						<div class="card-body">
 							<div class="card-text">
-								<a href='/movie/{{$movie->id}}'>
+								<a href='{{route("movie.show",$movie->id)}}'>
 								{{$movie->title}}
 								</a>
 								<br>{{$movie->year}} | {{$movie->rating}} <i class="fa fa-star" style='color: orange'></i>

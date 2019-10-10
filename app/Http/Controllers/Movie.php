@@ -14,9 +14,41 @@ class Movie extends Controller
 {
 	private $baseDir = "/app/public/movies/Películas/";	// Default location to scan movies if no other is provided
 	
+    /**
+     * Show all movies.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index() {
 		$this->list();
 	}
+
+   
+    /**
+     * Show all movies.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function list() {
+		$data['movies'] = Movies::getAll();
+		$data['genres'] = Genres::getMorePopular();
+		return view('movieList', $data);
+	}
+	
+    /**
+     * Show a specific movie.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+	public function show($id, $infoText = null) {
+		$data['movie'] = Movies::find($id);
+		$data['directors'] = Movies::findDirectors($id);
+		$data['actors'] = Movies::findActors($id);
+		$data['infoText'] = $infoText;
+		return view('movieShow', $data);
+	}
+
 	
 	public function getBaseDir() { return $baseDir; }
     
@@ -36,9 +68,9 @@ class Movie extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-        $this->validate($request,[ 'nombre'=>'required', 'resumen'=>'required', 'npagina'=>'required', 'edicion'=>'required', 'autor'=>'required', 'npagina'=>'required', 'precio'=>'required']);
-        Libro::create($request->all());
-        return redirect()->route('libro.index')->with('success','Registro creado satisfactoriamente');
+        $this->validate($request,[ 'title'=>'required', 'rating'=>'required', 'duration'=>'required', 'year'=>'required', 'link'=>'required']);
+        Movies::create($request->all());
+        return redirect()->action('Movie@show', ['id' => $id, 'infoText' => "Registro creado correctamente"]);
     }
  
     /**
@@ -60,10 +92,10 @@ class Movie extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)    {
-        $this->validate($request,[ 'nombre'=>'required', 'resumen'=>'required', 'npagina'=>'required', 'edicion'=>'required', 'autor'=>'required', 'npagina'=>'required', 'precio'=>'required']);
+        $this->validate($request,[ 'title'=>'required', 'rating'=>'required', 'duration'=>'required', 'year'=>'required', 'link'=>'required']);
  
-        libro::find($id)->update($request->all());
-        return redirect()->route('libro.index')->with('success','Registro actualizado satisfactoriamente');
+        Movies::find($id)->update($request->all());
+        return redirect()->action('Movie@show', ['id' => $id, 'infoText' => "Registro modificado con éxito"]);
  
     }
  
@@ -82,31 +114,7 @@ class Movie extends Controller
 		$data['movies'] = Movies::getAll();
 		return view('movieList', $data);
     }
-    
-    /**
-     * Show all movies.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function list() {
-		$data['movies'] = Movies::getAll();
-		$data['genres'] = Genres::getMorePopular();
-		return view('movieList', $data);
-	}
-	
-    /**
-     * Show a specific movie.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-	public function show($id) {
-		$data['movie'] = Movies::find($id);
-		$data['directors'] = Movies::findDirectors($id);
-		$data['actors'] = Movies::findActors($id);
-		return view('movieShow', $data);
-	}
-
+ 	
 	/**
 	 * Plays movie through external application
 	 * TODO: stream video from vlc server (for now, file is downloaded by browser; you can configure your browser for locally open it with vlc)

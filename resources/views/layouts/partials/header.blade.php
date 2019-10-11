@@ -7,6 +7,9 @@
 					<div class="input-group-btn">
 						<button class="btn btn-secondary" onclick="launchSearch()">Buscar</button>
 					</div>
+					<div class="input-group-btn">
+						<a href="{{route('login')}}" class="btn btn-primary">Login</a>
+					</div>
 				</div>				 
 				<small id="searchHelp" class="text-danger"></small>      
            </p>

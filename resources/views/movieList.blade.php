@@ -27,7 +27,7 @@
 				<div class='col-md-3'>
 					<div class='card mb-3 box-shadow'>
 						<a href='{{route("movie.show",$movie->id)}}'>
-						<img class="card-img-top" src='url("/movies/covers/{{$movie->cover}}")' width='200'/><br/>
+						<img class="card-img-top" src='{{url("/movies/covers/$movie->cover")}}' width='200'/><br/>
 						</a>
 						<div class="card-body">
 							<div class="card-text">

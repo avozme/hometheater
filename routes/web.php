@@ -27,3 +27,7 @@ Route::resource('movie', 'Movie');
 //Route::get('/movie/edit/{id}', 'Movie@edit')->name('movie.edit');
 //Route::patch('/movie/update/{id}', 'Movie@update')->name('movie.update');
 //Route::get('/movie/delete/{id}', 'Movie@destroy')->name('movie.destroy');
+
+// Auth
+Auth::routes();
+Route::get('/home', 'HomeController@index')->name('home');

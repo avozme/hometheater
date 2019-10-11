@@ -13,7 +13,17 @@ use App\GenresMovies;
 class Movie extends Controller
 {
 	private $baseDir = "/app/public/movies/Películas/";	// Default location to scan movies if no other is provided
-	
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth')->except('list', 'show');
+    }
+    	
     /**
      * Show all movies.
      *

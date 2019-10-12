@@ -16,12 +16,13 @@ class Movie extends Controller
 
     /**
      * Create a new controller instance.
+     * Login es needed except for list, show and play movie, and scan (scrap) a single movie.
      *
      * @return void
      */
     public function __construct()
     {
-        $this->middleware('auth')->except('list', 'show');
+        $this->middleware('auth')->except('index', 'list', 'show', 'play', 'scanSingle', 'search');
     }
     	
     /**

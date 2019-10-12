@@ -61,11 +61,13 @@
 							<!-- Buttons -->
 							<div class="d-flex justify-content-between align-items-center">
 								<div class="btn-group">
-									<button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.href='/movie/edit/{{$movie->id}}'">Editar</button>
-									&nbsp;&nbsp;
 									<button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.href='https://www.filmaffinity.com{{$movie->link}}'">Más info</button>
-									&nbsp;&nbsp;
-									<button type="button" class="btn btn-danger btn-xs" onclick="deleteMovieConfirmation({{$movie->id}})">Borrar</button>
+									@auth
+										&nbsp;&nbsp;
+										<button type="button" class="btn btn-warning btn-xs" onclick=onclick="location.href='/movie/edit/{{$movie->id}}'">Editar</button>
+										&nbsp;&nbsp;
+										<button type="button" class="btn btn-danger btn-xs" onclick="deleteMovieConfirmation({{$movie->id}})">Borrar</button>
+									@endauth
 								</div> <!-- btn-group -->
 							</div> <!-- d-flex -->
 							<p>&nbsp;</p>

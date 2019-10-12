@@ -5,22 +5,27 @@
      <div class="container">
        <div class="row">
           <div class="col-md-12">
-          <h3>
-			 @if(isset($infoText)) {{ $infoText }}
-			 @endif
- 		  </h3>
-		  @if (isset($genres))
-			@foreach ($genres as $genre)
-				<a href='{{route("movie.search",$genre->name)}}'>{{$genre->name}}</a>
-				@if(!$loop->last) |
-				@endif
-			@endforeach
-		  @endif
-		  <br>
-          <h3>
-			 <br>&nbsp;<br>@if(!isset($infoText)) Todas las películas
-			 @endif
- 		  </h3>
+			  <div class="infotext">
+				 @if(isset($infoText)) <h3>{{ $infoText }}</h3>
+				 @endif
+			  </div>
+			  @if (isset($genres))
+				@foreach ($genres as $genre)
+					<a href='{{route("movie.search",$genre->name)}}'>{{$genre->name}}</a>
+					@if(!$loop->last) |
+					@endif
+				@endforeach
+			  @endif
+			  <br>
+			  <div class="headtext">
+				 <br>&nbsp;<br>
+				 @if(!isset($infoText))
+					<h3>Todas las películas</h3>
+				 @endif
+				 @auth
+					<div class="btn btn-warning pull-right"><a href=''>Añadir nueva</a></div>
+				 @endauth
+			  </div>
  		  </div> <!-- col-md-12 -->
 		  <p>
 				@foreach ($movies as $movie)
@@ -35,6 +40,12 @@
 								{{$movie->title}}
 								</a>
 								<br>{{$movie->year}} | {{$movie->rating}} <i class="fa fa-star" style='color: orange'></i>
+								@auth
+									<br>
+									<button type="button" class="btn btn-warning btn-xs" onclick="location.href=''">Editar</button>
+									&nbsp;&nbsp;
+									<button type="button" class="btn btn-danger btn-xs" onclick="deleteMovieConfirmation({{$movie->id}})">Borrar</button>
+								@endauth
 							</div> <!-- card-text -->
 							<div class="d-flex justify-content-between align-items-center">
 							</div> <!-- d-flex -->

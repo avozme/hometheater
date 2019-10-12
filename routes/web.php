@@ -30,4 +30,10 @@ Route::resource('movie', 'Movie');
 
 // Auth
 Auth::routes();
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'Movie@list')->name('movie.index');
+Route::get('/logout', function(){
+    Session::flush();
+    Auth::logout();
+    return Redirect::to("/");
+//      ->with('message', array('type' => 'success', 'text' => 'You have successfully logged out'));
+});

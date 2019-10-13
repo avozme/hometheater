@@ -4,10 +4,8 @@
 	 * 
 	 * @params Integer idMovie
 	 */
-	function deleteMovieConfirmation(idMovie) {
-		if (confirm("¿Estás seguro de que deseas borrar esta película?\n(El archivo NO se eliminará del disco duro)")) {
-			location.href="/movie/delete/" + idMovie;
-		}
+	function deleteMovieConfirmation() {
+		return confirm("¿Estás seguro de que deseas borrar esta película?\n(El archivo NO se eliminará del disco duro)");
 	}
 	
 	/**

@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PeopleActMovies extends Model
+class PersonActsMovie extends Model
 {
     //
     protected $table = "people_act_movies";

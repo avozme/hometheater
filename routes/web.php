@@ -12,28 +12,28 @@
 */
 
 // All movies
-Route::get('/', 'Movie@list')->name('movie.index');
-Route::get('/movies', 'Movie@list')->name('movie.index');
-Route::get('/movies/search/{searchString}', 'Movie@search')->name('movie.search');
-Route::get('/movies/scan/', 'Movie@scanDir')->name('movie.scanMany');
+Route::get('/', 'MovieController@list')->name('movie.index');
+Route::get('/movies', 'MovieController@list')->name('movie.index');
+Route::get('/movies/search/{searchString}', 'MovieController@search')->name('movie.search');
+Route::get('/movies/scan/', 'MovieController@scanDir')->name('movie.scanMany');
 
 // Single movie
-Route::get('/movie/play/{id}', 'Movie@play')->name('movie.play');
-Route::get('/movie/scan/{id}', 'Movie@scanSingle')->name('movie.scanOne');
+Route::get('/movie/play/{id}', 'MovieController@play')->name('movie.play');
+Route::get('/movie/scan/{id}', 'MovieController@scanSingle')->name('movie.scanOne');
 
 // Movie REST
-Route::resource('movie', 'Movie');
+Route::resource('movie', 'MovieController');
 //Route::get('/movie/{id}', 'Movie@show')->name('movie.show');
 //Route::get('/movie/edit/{id}', 'Movie@edit')->name('movie.edit');
 //Route::patch('/movie/update/{id}', 'Movie@update')->name('movie.update');
-//Route::get('/movie/delete/{id}', 'Movie@destroy')->name('movie.destroy');
+//Route::delete('/movie/delete/{id}', 'Movie@destroy')->name('movie.destroy');
+//Etc.
 
 // Auth
 Auth::routes();
-Route::get('/home', 'Movie@list')->name('movie.index');
+Route::get('/home', 'MovieController@list')->name('movie.index');
 Route::get('/logout', function(){
     Session::flush();
     Auth::logout();
     return Redirect::to("/");
-//      ->with('message', array('type' => 'success', 'text' => 'You have successfully logged out'));
 });

@@ -4,3 +4,6 @@
     <script src="/js/jquery-3.4.1.min.js"></script>
     <script src="/js/tether.min.js" ></script>
     <script src="/js/bootstrap.min.js"></script>
+    <!-- My javascript functions -->
+    <script type="text/javascript" src="/js/functions.js"></script>
+

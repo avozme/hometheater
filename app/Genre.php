@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 
-class Genres extends Model
+class Genre extends Model
 {
     //
     protected $table = "genres";
@@ -13,7 +13,7 @@ class Genres extends Model
     protected $fillable = array('id', 'name');
     
     public function movies() {
-		return $this->belongsToMany('App\Movies', 'genres_movies', 'idGenre', 'idMovie');
+		return $this->belongsToMany('App\Movie', 'genres_movies', 'idGenre', 'idMovie');
 	}
 	
 	public static function getMorePopular() {

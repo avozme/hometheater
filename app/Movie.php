@@ -4,14 +4,14 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use DB;
-use App\People;
-use App\PeopleDirectMovies;
-use App\PeopleActMovies;
-use App\Genres;
-use App\GenresMovies;
+use App\Person;
+use App\PersonDirectsMovie;
+use App\PersonActsMovie;
+use App\Genre;
+use App\GenreMovie;
 use App\Scrapper;
 
-class Movies extends Model
+class Movie extends Model
 {
     //
     protected $table = "movies";
@@ -19,15 +19,15 @@ class Movies extends Model
     protected $fillable = array('id', 'title', 'year', 'duration', 'dateAdded', 'rating', 'cover', 'fileDirName', 'fileName', 'link');
     
     public function genres() {
-		return $this->belongsToMany('App\Genres', 'genres_movies', 'idMovie', 'idGenre');
+		return $this->belongsToMany('App\Genre', 'genres_movies', 'idMovie', 'idGenre');
 	}
 	
 	public function actors() {
-		return $this->belongsToMany('App\People', 'people_act_movies', 'idMovie', 'idPerson');
+		return $this->belongsToMany('App\Person', 'people_act_movies', 'idMovie', 'idPerson');
 	}
 	
 	public function directors() {
-		return $this->belongsToMany('app\People', 'people_direct_movies', 'id_movie', 'id_person');
+		return $this->belongsToMany('app\Person', 'people_direct_movies', 'id_movie', 'id_person');
     }
     
     public static function getAll() {
@@ -52,7 +52,7 @@ class Movies extends Model
 	
 	public static function search($searchString) {
 		// Search by movie title
-		$searchResultTitle = Movies::where('title', 'like', "%$searchString%")->orderBy('year', 'desc')->orderBy('title')->get();
+		$searchResultTitle = Movie::where('title', 'like', "%$searchString%")->orderBy('year', 'desc')->orderBy('title')->get();
 		// Search by movie cast
 		$searchResultCast = DB::table('movies')
 								->join('people_act_movies', 'people_act_movies.idMovie', '=', 'movies.id')
@@ -88,7 +88,7 @@ class Movies extends Model
 					}
 					if (is_dir($dir.$file)) {
 						// Subdirectory found: launch recursive scan and add results to $moviesFound
-						$otherMoviesFound = Movies::scan($dir.$file.'/');
+						$otherMoviesFound = Movie::scan($dir.$file.'/');
 						foreach ($otherMoviesFound as $movie) {
 							$moviesFound[] = $movie;
 						}
@@ -148,11 +148,11 @@ class Movies extends Model
 		for ($i = 0; $i < count($moviesTitles); $i++) {
 			$moviesCount['processed']++;
 			$movieTitle = $moviesTitles[$i];
-			$searchResult = Movies::where('title', '=', $movieTitle)->get();
+			$searchResult = Movie::where('title', '=', $movieTitle)->get();
 			if (count($searchResult) == 0) {
 				// The movie title doesn't exist on DB: we gonna create and save it
 				$moviesCount['inserted']++;
-				$movie = new Movies();
+				$movie = new Movie();
 				// We know yet some data
 				$movie->title = $moviesTitles[$i];
 				$movie->fileDirName = $moviesDirNames[$i];

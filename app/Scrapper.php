@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Movies;
+use App\Movie;
 
 class Scrapper extends Model
 {
@@ -71,7 +71,7 @@ class Scrapper extends Model
 
 		// Extract movie data from response
 		// 1. Create Movie object and assing movieUrl
-		$movie = new Movies();
+		$movie = new Movie();
 		//file_put_contents($this->logfile, "Movie URL: $this->movieUrl\n", FILE_APPEND);
 		$movie->link = substr($this->movieUrl, 0, 1000);
 		

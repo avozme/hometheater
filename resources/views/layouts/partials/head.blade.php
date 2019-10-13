@@ -9,5 +9,3 @@
     <link href="/css/album.css" rel="stylesheet">
     <!-- Font awesome CDN -->
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- My javascript functions -->
-    <script type="text/javascript" src="/js/functions.js"></script>

@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class People extends Model
+class Person extends Model
 {
     //
     protected $table = "people";
@@ -12,10 +12,10 @@ class People extends Model
     protected $fillable = array('id', 'name', 'photo', 'link');
     
     public function actsInMovies() {
-		return $this->belongsToMany('App\Movies', 'people_act_movies', 'idPerson', 'idMovie');
+		return $this->belongsToMany('App\Movie', 'people_act_movies', 'idPerson', 'idMovie');
 	}
 	
 	public function directsMovies() {
-		return $this->belongsToMany('App\Movies', 'people_direct_movies', 'idPerson', 'idMovie');
+		return $this->belongsToMany('App\Movie', 'people_direct_movies', 'idPerson', 'idMovie');
 	}
 }

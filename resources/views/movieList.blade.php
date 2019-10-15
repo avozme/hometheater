@@ -23,7 +23,7 @@
 					<h3>Todas las películas</h3>
 				 @endif
 				 @auth
-					<div class="btn btn-warning pull-right"><a href=''>Añadir nueva</a></div>
+					<div class="btn btn-warning pull-right"><a href='{{route("movie.create")}}'>Añadir nueva</a></div>
 				 @endauth
 			  </div>
  		  </div> <!-- col-md-12 -->
@@ -41,19 +41,20 @@
 								</a>
 								<br>{{$movie->year}} | {{$movie->rating}} <i class="fa fa-star" style='color: orange'></i>
 								@auth
-									<br>
-									<!-- Edit movie button -->
-									<form action="{{route('movie.edit', $movie->id)}}">
-										@csrf
-										<button type="submit" class="btn btn-warning btn-xs">Editar</button>
-									</form>
-									&nbsp;&nbsp;
-									<!-- Delete movie button -->
-									<form action="{{route('movie.destroy', $movie->id)}}">
-										@csrf
-										@method("DELETE")
-										<button type="submit" class="btn btn-danger btn-xs" onclick="deleteMovieConfirmation()">Borrar</button>
-									</form>
+									<div class="btn-group">
+										<!-- Edit movie button -->
+										<form action="/movie/{{$movie->id}}/edit">
+											@csrf
+											<button type="submit" class="btn btn-warning btn-xs">Editar</button>
+										</form>
+										&nbsp;&nbsp;
+										<!-- Delete movie button -->
+										<!--<form action="{{route('movie.destroy', $movie->id)}}">-->
+										<form action="/movie/{{$movie->id}}/destroy">
+											<!--@method("DELETE")-->
+											<button type="submit" class="btn btn-danger btn-xs" onclick="deleteMovieConfirmation()">Borrar</button>
+										</form>
+									</div>
 								@endauth
 							</div> <!-- card-text -->
 							<div class="d-flex justify-content-between align-items-center">

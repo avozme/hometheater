@@ -7,7 +7,8 @@
           <div class="col-md-12">
           <h3>
 			 @if(isset($infoText)) {{ $infoText }}
-			 @else Modificar película
+			 @elseif($action == 'edit') Modificar película
+			 @else Película nueva
 			 @endif
  		  </h3>
  		  </div> <!-- col-md-12 -->
@@ -28,9 +29,15 @@
 					<div class="panel panel-default">
 						<div class="panel-body">					
 							<div class="table-container">
-								<form method="POST" action="{{ route('movie.update',$movie->id) }}"  role="form">
-									{{ csrf_field() }}
-									<input name="_method" type="hidden" value="PATCH">
+								@if($action == 'edit')
+									<form method="POST" action="{{ route('movie.update', $movie->id) }}"  role="form">
+								@else
+									<form method="POST" action="{{ route('movie.store') }}"  role="form">
+								@endif
+									@csrf
+									@if($action == 'edit')
+										@method("PATCH")
+									@endif
 									<div class="row">
 										<div class="col-md-12">
 											<div class="form-group">
@@ -77,7 +84,11 @@
 										
 									</div>
 									<div class="col-md-12">
-										<input type="submit"  value="Actualizar" class="btn btn-success">
+										@if ($action == 'edit')
+											<input type="submit"  value="Actualizar" class="btn btn-success">
+										@else
+											<input type="submit"  value="Insertar" class="btn btn-success">
+										@endif
 										<a href="{{ route('movie.index') }}" class="btn btn-secondary" >Atrás</a>
 										<p>&nbsp;</p>
 									</div>	

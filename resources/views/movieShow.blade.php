@@ -61,12 +61,20 @@
 							<!-- Buttons -->
 							<div class="d-flex justify-content-between align-items-center">
 								<div class="btn-group">
+									<!-- More info button -->
 									<button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.href='https://www.filmaffinity.com{{$movie->link}}'">Más info</button>
 									@auth
+										<!-- Edit button -->
 										&nbsp;&nbsp;
-										<button type="button" class="btn btn-warning btn-xs" onclick=onclick="location.href='/movie/edit/{{$movie->id}}'">Editar</button>
+										<button type="button" class="btn btn-warning btn-xs" onclick="location.href='/movie/{{$movie->id}}/edit'">Editar</button>
+										<!-- Delete button -->
 										&nbsp;&nbsp;
-										<button type="button" class="btn btn-danger btn-xs" onclick="deleteMovieConfirmation({{$movie->id}})">Borrar</button>
+										<!--<form action="{{route('movie.destroy', $movie->id)}}">-->
+										<form action="/movie/{{$movie->id}}/destroy">
+											@csrf
+											@method("DELETE")
+											<button type="submit" class="btn btn-danger btn-xs" onclick="deleteMovieConfirmation()">Borrar</button>
+										</form>
 									@endauth
 								</div> <!-- btn-group -->
 							</div> <!-- d-flex -->

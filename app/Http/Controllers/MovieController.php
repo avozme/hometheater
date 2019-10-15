@@ -40,9 +40,10 @@ class MovieController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function list() {
+    public function list($infoText = null) {
 		$data['movies'] = Movie::getAll();
 		$data['genres'] = Genre::getMorePopular();
+		if ($infoText != null) $data['infoText'] = $infoText;
 		return view('movieList', $data);
 	}
 	
@@ -69,7 +70,9 @@ class MovieController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('movieCreate');
+		$movie = new Movie();
+		$action = 'create';
+        return view('movieEdit', compact('movie', 'action'));
     }
  
     /**
@@ -80,8 +83,8 @@ class MovieController extends Controller
      */
     public function store(Request $request) {
         $this->validate($request,[ 'title'=>'required', 'rating'=>'required', 'duration'=>'required', 'year'=>'required', 'link'=>'required']);
-        Movie::create($request->all());
-        return redirect()->action('Movie@show', ['id' => $id, 'infoText' => "Registro creado correctamente"]);
+        $movie = Movie::create($request->all());
+        return redirect()->action('MovieController@show', ['id' => $movie->id, 'infoText' => "Registro creado correctamente"]);
     }
  
     /**
@@ -92,7 +95,8 @@ class MovieController extends Controller
      */
     public function edit($id) {
         $movie = Movie::find($id);
-        return view('movieEdit',compact('movie'));
+        $action = 'edit';
+        return view('movieEdit',compact('movie', 'action'));
     }
  
     /**
@@ -106,7 +110,7 @@ class MovieController extends Controller
         $this->validate($request,[ 'title'=>'required', 'rating'=>'required', 'duration'=>'required', 'year'=>'required', 'link'=>'required']);
  
         Movie::find($id)->update($request->all());
-        return redirect()->action('Movie@show', ['id' => $id, 'infoText' => "Registro modificado con éxito"]);
+        return redirect()->action('MovieController@show', ['id' => $id, 'infoText' => "Registro modificado con éxito"]);
  
     }
  
@@ -118,12 +122,10 @@ class MovieController extends Controller
      */
     public function destroy($id) {
         Movie::find($id)->delete();
-        PersonActMovie::where('idMovie', $id)->delete();
-        PersonDirectMovie::where('idMovie', $id)->delete();
+        PersonActsMovie::where('idMovie', $id)->delete();
+        PersonDirectsMovie::where('idMovie', $id)->delete();
         GenreMovie::where('idMovie', $id)->delete();
-		$data['infoText'] = "Película borrada con éxito";
-		$data['movies'] = Movie::getAll();
-		return redirect()->action('Movie@list')->with(['infoText' => "Película borrada con éxito"]);
+		return redirect()->action('MovieController@list', ['infoText' => "Película borrada con éxito"]);
     }
  	
 	/**

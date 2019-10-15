@@ -22,12 +22,16 @@ Route::get('/movie/play/{id}', 'MovieController@play')->name('movie.play');
 Route::get('/movie/scan/{id}', 'MovieController@scanSingle')->name('movie.scanOne');
 
 // Movie REST
+Route::get('/movie/{id}/destroy', 'MovieController@destroy')->name('movie.destroy');
 Route::resource('movie', 'MovieController');
+//Route::get('/movie', 'Movie@index')->name('movie.index');
 //Route::get('/movie/{id}', 'Movie@show')->name('movie.show');
-//Route::get('/movie/edit/{id}', 'Movie@edit')->name('movie.edit');
-//Route::patch('/movie/update/{id}', 'Movie@update')->name('movie.update');
-//Route::delete('/movie/delete/{id}', 'Movie@destroy')->name('movie.destroy');
-//Etc.
+//Route::get('/movie/create', 'MovieController@create')->name('movie.create');
+//Route::post('/movie/{id}', 'Movie@store')->name('movie.store');
+//Route::get('/movie/{id}/edit', 'Movie@edit')->name('movie.edit');
+//Route::patch('/movie/{id}', 'Movie@update')->name('movie.update');
+//Route::delete('/movie/{id}', 'Movie@destroy')->name('movie.destroy');
+
 
 // Auth
 Auth::routes();

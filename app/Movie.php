@@ -197,57 +197,57 @@ class Movie extends Model
 		$this->datePlayed = '2000/01/01';
 
 		// Directing
-		PeopleDirectMovies::where('idMovie', $this->id)->delete();
+		PersonDirectsMovie::where('idMovie', $this->id)->delete();
 		$listDirectors = $scrapper->getDirectors();
 		foreach ($listDirectors as $directorName) {
 			$directorName = substr($directorName, 0, 500);
 			$idPerson = 0;
-			$personSearch = People::where('name', '=', $directorName)->get();
+			$personSearch = Person::where('name', '=', $directorName)->get();
 			if (count($personSearch) == 0) {
 				// This director doesn't exist on DB: we gonna add him/her
-				$person = People::create(['name' => $directorName, 'link' => 'https://imdb.com']); // TODO
+				$person = Person::create(['name' => $directorName, 'link' => 'https://imdb.com']); // TODO
 				$idPerson = $person->id;
 			} else {
 				// The actor/actress existed yet on DB. Retrieving id.
 				$idPerson = $personSearch[0]->id;
 			}
-			$personDirectMovie = PeopleDirectMovies::create(['idPerson' => $idPerson, 'idMovie' => $this->id]);
+			$personDirectMovie = PersonDirectsMovie::create(['idPerson' => $idPerson, 'idMovie' => $this->id]);
 		}
 		
 		// Acting: retrieve actors' list from filmaffinity
-		PeopleActMovies::where('idMovie', $this->id)->delete();
+		PersonActsMovie::where('idMovie', $this->id)->delete();
 		$listActors = $scrapper->getCast();
 		foreach ($listActors as $actorName) {
 			$actorName = substr($actorName, 0, 500);
 			$idPerson = 0;
-			$personSearch = People::where('name', '=', $actorName)->get();
+			$personSearch = Person::where('name', '=', $actorName)->get();
 			if (count($personSearch) == 0) {
 				// This actor/actress doesn't exist on DB: we gonna add him/her
-				$person = People::create(['name' => $actorName, 'link' => 'https://imdb.com']); // TODO
+				$person = Person::create(['name' => $actorName, 'link' => 'https://imdb.com']); // TODO
 				$idPerson = $person->id;
 			} else {
 				// The actor/actress existed yet on DB. Retrieving id.
 				$idPerson = $personSearch[0]->id;
 			}
-			$personActsMovie = PeopleActMovies::create(['idPerson' => $idPerson, 'idMovie' => $this->id]);
+			$personActsMovie = PersonActsMovie::create(['idPerson' => $idPerson, 'idMovie' => $this->id]);
 		}
 
 		// Genres
-		GenresMovies::where('idMovie', $this->id)->delete();
+		GenreMovie::where('idMovie', $this->id)->delete();
 		$listGenres = $scrapper->getGenres();
 		foreach ($listGenres as $genre) {
 			$genre = substr($genre, 0, 500);
-			$genreSearch = Genres::where('name', '=', $genre)->get();
+			$genreSearch = Genre::where('name', '=', $genre)->get();
 			$idGenre = 0;
 			if (count($genreSearch) == 0) {
 				// This actor/actress doesn't exist on DB: we gonna add him/her
-				$newGenre = Genres::create(['name' => $genre]);
+				$newGenre = Genre::create(['name' => $genre]);
 				$idGenre = $newGenre->id;
 			} else {
 				// The actor/actress existed yet on DB. Retrieving id.
 				$idGenre = $genreSearch[0]->id;
 			}
-			$genreMovie = GenresMovies::create(['idGenre' => $idGenre, 'idMovie' => $this->id]);
+			$genreMovie = GenreMovie::create(['idGenre' => $idGenre, 'idMovie' => $this->id]);
 		}
 
 	}

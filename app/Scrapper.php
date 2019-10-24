@@ -55,11 +55,24 @@ class Scrapper extends Model
 
 		// Load the movie page on filmaffinity.com
 		$curl = curl_init();
-		curl_setopt_array($curl, [
-			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_URL => 'https://www.filmaffinity.com'.$this->movieUrl,
-			CURLOPT_USERAGENT => 'Codular Sample cURL Request'
-		]);
+		// movieUrl includes filmaffinity word ???
+		if (strpos($this->movieUrl, "filmaffinity") == FALSE) {
+			// No, it doesn't include. We gonna include it.
+			curl_setopt_array($curl, [
+				CURLOPT_RETURNTRANSFER => 1,
+				CURLOPT_URL => 'https://www.filmaffinity.com'.$this->movieUrl,
+				CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+			]);
+			echo "<script>console.log('".$this->movieUrl." - UNO')</script>";
+		} else {
+			// Yes, movieUrl includes "filmaffinity" yet. We access directly to movieUrl
+			curl_setopt_array($curl, [
+				CURLOPT_RETURNTRANSFER => 1,
+				CURLOPT_URL => $this->movieUrl,
+				CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+			]);
+			echo "<script>console.log('".$this->movieUrl." - DOS')</script>";
+		}
 		$this->resp = curl_exec($curl);
 		curl_close($curl);
 	}
